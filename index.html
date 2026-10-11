@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wizard – Punkteblock</title>
+
+<style>
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #f5f6fb;
+  background: #111827;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(155deg, #1d3050, #111827 55%);
+}
+
+main {
+  max-width: 1000px;
+  margin: auto;
+  padding: 22px 18px 48px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 20px;
+  border-bottom: 1px solid #47546c;
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 27px;
+}
+
+.muted {
+  color: #b6c3d6;
+}
+
+.tiny {
+  font-size: 13px;
+}
+
+.card {
+  background: #202c42;
+  border: 1px solid #41516b;
+  border-radius: 20px;
+  padding: 22px;
+  margin: 20px 0;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn {
+  border: 1px solid #62708a;
+  border-radius: 13px;
+  background: #33425c;
+  color: white;
+  min-height: 51px;
+  padding: 10px 17px;
+  font-weight: 700;
+}
+
+.btn.primary {
+  background: #efbd62;
+  border-color: #efbd62;
+  color: #1d2636;
+}
+
+.btn.warn {
+  background: #633e4a;
+}
+
+.btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.btn.wide {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.btn.small {
+  min-height: 38px;
+  padding: 7px 12px;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.count .btn {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  font-size: 27px;
+}
+
+.count strong {
+  font-size: 30px;
+  min-width: 35px;
+  text-align: center;
+}
+
+.input {
+  background: #101b2e;
+  border: 1px solid #62708a;
+  border-radius: 11px;
+  padding: 14px;
+  color: white;
+  width: 100%;
+  font-size: 18px;
+}
+
+label {
+  display: block;
+  margin: 12px 0 7px;
+  color: #d3ddeb;
+}
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 22px;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.stat {
+  background: #111e32;
+  border: 1px solid #485976;
+  border-radius: 14px;
+  padding: 13px 18px;
+}
+
+.stat b {
+  font-size: 26px;
+}
+
+.stat.danger {
+  border-color: #dd8c82;
+  color: #ffc4b9;
+}
+
+.stat.good {
+  border-color: #5eab87;
+  color: #c0f4d5;
+}
+
+.players {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.player {
+  background: #152238;
+  border: 1px solid #45536b;
+  border-radius: 15px;
+  padding: 14px 9px;
+  text-align: center;
+  min-width: 0;
+}
+
+.player .name {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  min-height: 43px;
+}
+
+.player .score {
+  color: #f2c87b;
+  font-size: 14px;
+  margin: 5px 0 16px;
+}
+
+.player .count {
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.player .count .btn {
+  width: 42px;
+  height: 46px;
+  font-size: 24px;
+}
+
+.player .count strong {
+  font-size: 24px;
+  min-width: 27px;
+}
+
+.notice {
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: #473c32;
+  border: 1px solid #9d7651;
+  color: #ffe3b2;
+  margin: 12px 0;
+}
+
+.actions {
+  max-width: 450px;
+  margin: 28px auto 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.tabs button {
+  flex: 1;
+}
+
+.selected {
+  outline: 2px solid #f2c575;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 400px;
+}
+
+th, td {
+  text-align: center;
+  border-bottom: 1px solid #48556b;
+  padding: 12px 8px;
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.rank {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #47536a;
+  font-size: 20px;
+}
+
+@media (max-width: 650px) {
+  main {
+    padding: 12px 10px 30px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .players {
+    gap: 5px;
+  }
+
+  .player {
+    padding: 10px 3px;
+  }
+
+  .player .count .btn {
+    width: 35px;
+    height: 40px;
+  }
+
+  .player .count strong {
+    font-size: 20px;
+    min-width: 18px;
+  }
+
+  .player .name {
+    font-size: 13px;
+  }
+
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+<header>
+  <div>
+    <h1>🧙 Wizard</h1>
+    <div class="muted tiny">Offline-Punkteblock</div>
+  </div>
+
+  <button class="btn small" onclick="openMenu()">
+    ☰ Menü
+  </button>
+</header>
+
+<div id="app"></div>
+
+</main>
+
+<script>
+
+// =====================================
+// SPIELVARIABLEN
+// =====================================
+
+let game = null;
+let view = "setup";
+let playerCount = 4;
+
+let playerNames = [
+  "Spieler 1",
+  "Spieler 2",
+  "Spieler 3",
+  "Spieler 4",
+  "Spieler 5",
+  "Spieler 6"
+];
+
+// =====================================
+// HILFSFUNKTIONEN
+// =====================================
+
+function sum(values) {
+  return values.reduce((a, b) => a + b, 0);
+}
+
+function calculatePoints(predicted, actual) {
+
+  if (predicted === actual) {
+    return 20 + 10 * actual;
+  }
+
+  return -10 * Math.abs(predicted - actual);
+}
+
+function currentRound() {
+  return game.rounds.length + 1;
+}
+
+function maximumRounds() {
+  return Math.floor(60 / game.players.length);
+}
+
+function totalPoints() {
+
+  return game.players.map((player, i) => {
+
+    return sum(
+      game.rounds.map(round =>
+        calculatePoints(
+          round.bids[i],
+          round.actual[i]
+        )
+      )
+    );
+
+  });
+
+}
+
+function escapeHTML(text) {
+  return String(text).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function button(text, action, style = "") {
+
+  return `
+    <button class="btn ${style}" onclick="${action}">
+      ${text}
+    </button>
+  `;
+
+}
+
+// =====================================
+// SEITE 1 – NEUES SPIEL
+// =====================================
+
+function showSetup() {
+
+  view = "setup";
+
+  document.getElementById("app").innerHTML = `
+
+    <section class="card">
+
+      <h2>Neues Spiel</h2>
+
+      <p class="muted">
+        Anzahl Spieler auswählen und Namen eingeben.
+      </p>
+
+      <div class="summary">
+
+        <b>Anzahl Spieler</b>
+
+        <div class="count">
+
+          <button class="btn" onclick="changePlayerCount(-1)">
+            −
+          </button>
+
+          <strong>${playerCount}</strong>
+
+          <button class="btn" onclick="changePlayerCount(1)">
+            +
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="setup-grid">
+
+        ${playerNames.slice(0, playerCount).map((name, i) => `
+
+          <div>
+
+            <label>Spieler ${i + 1}</label>
+
+            <input
+              class="input"
+              id="player${i}"
+              value="${escapeHTML(name)}"
+              maxlength="24"
+            >
+
+          </div>
+
+        `).join("")}
+
+      </div>
+
+      <div class="actions">
+
+        ${button(
+          "Spiel starten →",
+          "startGame()",
+          "primary wide"
+        )}
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+function changePlayerCount(amount) {
+
+  document.querySelectorAll("[id^='player']").forEach((input, i) => {
+    playerNames[i] = input.value;
+  });
+
+  playerCount = Math.max(
+    3,
+    Math.min(6, playerCount + amount)
+  );
+
+  showSetup();
+}
+
+function startGame() {
+
+  let names = [];
+
+  for (let i = 0; i < playerCount; i++) {
+
+    const name = document
+      .getElementById("player" + i)
+      .value.trim();
+
+    if (!name) {
+      alert("Bitte alle Spielernamen eingeben.");
+      return;
+    }
+
+    names.push(name);
+  }
+
+  game = {
+    players: names,
+    rounds: [],
+    bids: Array(playerCount).fill(0),
+    actual: Array(playerCount).fill(0),
+    phase: "bids"
+  };
+
+  showBids();
+}
+
+// =====================================
+// SEITE 2 – STICHE ANSAGEN
+// =====================================
+
+function showBids() {
+
+  view = "bids";
+
+  const round = currentRound();
+  const total = sum(game.bids);
+  const points = totalPoints();
+
+  let warning = "";
+
+  if (total === round) {
+
+    warning = `
+      <div class="notice">
+        ⚠️ Die Summe der Ansagen entspricht der Rundenzahl –
+        fortfahren trotzdem möglich
+      </div>
+    `;
+
+  }
+
+  document.getElementById("app").innerHTML = `
+
+    ${navigation()}
+
+    <section class="card">
+
+      <div class="topline">
+
+        <h2>Stiche ansagen</h2>
+
+        <div class="stat">
+          Runde <b>${round}</b>
+        </div>
+
+      </div>
+
+      <div class="summary">
+
+        <span class="muted">
+          ${round} Karten pro Spieler
+        </span>
+
+        <div class="stat ${total === round ? "danger" : "good"}">
+
+          <div class="tiny">
+            Angesagte Stiche
+          </div>
+
+          <b>${total}</b> / ${round}
+
+        </div>
+
+      </div>
+
+      <div class="players" style="--cols:${game.players.length}">
+
+        ${game.players.map((name, i) => `
+
+          <div class="player">
+
+            <div class="name">
+              ${escapeHTML(name)}
+            </div>
+
+            <div class="score">
+              ${points[i]} Punkte
+            </div>
+
+            <div class="count">
+
+              <button class="btn" onclick="changeBid(${i}, -1)">
+                −
+              </button>
+
+              <strong>${game.bids[i]}</strong>
+
+              <button class="btn" onclick="changeBid(${i}, 1)">
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+        `).join("")}
+
+      </div>
+
+      ${warning}
+
+      <div class="actions">
+
+        ${button(
+          "Runde spielen →",
+          "startRound()",
+          "primary wide"
+        )}
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+function changeBid(player, amount) {
+
+  game.bids[player] = Math.max(
+    0,
+    Math.min(
+      currentRound(),
+      game.bids[player] + amount
+    )
+  );
+
+  showBids();
+}
+
+function startRound() {
+
+  game.phase = "actual";
+
+  game.actual = Array(
+    game.players.length
+  ).fill(0);
+
+  showActual();
+}
+
+// =====================================
+// SEITE 3 – STICHE GEMACHT
+// =====================================
+
+function showActual() {
+
+  view = "actual";
+
+  const round = currentRound();
+  const total = sum(game.actual);
+  const points = totalPoints();
+
+  document.getElementById("app").innerHTML = `
+
+    ${navigation()}
+
+    <section class="card">
+
+      <div class="topline">
+
+        <h2>Stiche gemacht</h2>
+
+        <div class="stat">
+          Runde <b>${round}</b>
+        </div>
+
+      </div>
+
+      <div class="summary">
+
+        <span class="muted">
+          ${round} Karten pro Spieler
+        </span>
+
+        <div class="stat ${total === round ? "good" : "danger"}">
+
+          <div class="tiny">
+            Gemachte Stiche
+          </div>
+
+          <b>${total}</b> / ${round}
+
+        </div>
+
+      </div>
+
+      <div class="players" style="--cols:${game.players.length}">
+
+        ${game.players.map((name, i) => `
+
+          <div class="player">
+
+            <div class="name">
+              ${escapeHTML(name)}
+            </div>
+
+            <div class="score">
+              ${points[i]} Punkte
+            </div>
+
+            <div class="tiny muted">
+              Ansage: ${game.bids[i]}
+            </div>
+
+            <div class="count">
+
+              <button class="btn" onclick="changeActual(${i}, -1)">
+                −
+              </button>
+
+              <strong>${game.actual[i]}</strong>
+
+              <button class="btn" onclick="changeActual(${i}, 1)">
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+        `).join("")}
+
+      </div>
+
+      ${total !== round ? `
+        <div class="notice">
+          Die tatsächlich gemachten Stiche müssen
+          zusammen genau ${round} ergeben.
+          Aktuell: ${total}.
+        </div>
+      ` : ""}
+
+      <div class="actions">
+
+        ${button(
+          "Runde abschließen & Punkte berechnen →",
+          "finishRound()",
+          "primary wide"
+        )}
+
+        ${button(
+          "← Ansagen korrigieren",
+          "showBids()",
+          "wide"
+        )}
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+function changeActual(player, amount) {
+
+  game.actual[player] = Math.max(
+    0,
+    Math.min(
+      currentRound(),
+      game.actual[player] + amount
+    )
+  );
+
+  showActual();
+}
+
+function finishRound() {
+
+  const round = currentRound();
+
+  if (sum(game.actual) !== round) {
+
+    alert(
+      "Die tatsächlich gemachten Stiche müssen zusammen genau " +
+      round +
+      " ergeben."
+    );
+
+    return;
+  }
+
+  game.rounds.push({
+    bids: [...game.bids],
+    actual: [...game.actual]
+  });
+
+  if (game.rounds.length >= maximumRounds()) {
+    showRanking();
+    return;
+  }
+
+  game.bids = Array(
+    game.players.length
+  ).fill(0);
+
+  game.actual = Array(
+    game.players.length
+  ).fill(0);
+
+  game.phase = "bids";
+
+  showBids();
+}
+
+// =====================================
+// NAVIGATION
+// =====================================
+
+function navigation() {
+
+  return `
+
+    <div class="tabs">
+
+      ${button(
+        "Spiel",
+        "showGame()"
+      )}
+
+      ${button(
+        "🏆 Rangliste",
+        "showRanking()"
+      )}
+
+      ${button(
+        "Verlauf",
+        "showHistory()"
+      )}
+
+    </div>
+
+  `;
+
+}
+
+function showGame() {
+
+  if (!game) {
+    showSetup();
+    return;
+  }
+
+  if (game.phase === "actual") {
+    showActual();
+  } else {
+    showBids();
+  }
+}
+
+// =====================================
+// RANGLISTE
+// =====================================
+
+function showRanking() {
+
+  view = "ranking";
+
+  const points = totalPoints();
+
+  const ranking = game.players.map((name, i) => ({
+    name,
+    points: points[i]
+  }));
+
+  ranking.sort((a, b) => b.points - a.points);
+
+  document.getElementById("app").innerHTML = `
+
+    ${navigation()}
+
+    <section class="card">
+
+      <h2>🏆 Rangliste</h2>
+
+      ${ranking.map((player, i) => `
+
+        <div class="rank">
+
+          <span>
+            ${i + 1}. ${escapeHTML(player.name)}
+          </span>
+
+          <b>
+            ${player.points} Punkte
+          </b>
+
+        </div>
+
+      `).join("")}
+
+      ${button(
+        "Zurück zum Spiel",
+        "showGame()",
+        "primary wide"
+      )}
+
+    </section>
+
+  `;
+
+}
+
+// =====================================
+// SPIELVERLAUF
+// =====================================
+
+function showHistory() {
+
+  view = "history";
+
+  const totals = totalPoints();
+
+  document.getElementById("app").innerHTML = `
+
+    ${navigation()}
+
+    <section class="card">
+
+      <h2>Rundenverlauf</h2>
+
+      <div class="scroll">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Runde</th>
+
+              ${game.players.map(name => `
+                <th>${escapeHTML(name)}</th>
+              `).join("")}
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            ${game.rounds.map((round, i) => `
+
+              <tr>
+
+                <td>${i + 1}</td>
+
+                ${round.bids.map((bid, j) => {
+
+                  const points = calculatePoints(
+                    bid,
+                    round.actual[j]
+                  );
+
+                  return `
+
+                    <td>
+
+                      <b>
+                        ${points > 0 ? "+" : ""}${points}
+                      </b>
+
+                      <div class="tiny muted">
+                        ${bid} / ${round.actual[j]}
+                      </div>
+
+                    </td>
+
+                  `;
+
+                }).join("")}
+
+              </tr>
+
+            `).join("")}
+
+            <tr style="font-weight:bold; color:#f2c87b;">
+
+              <td>Summe</td>
+
+              ${totals.map(points => `
+                <td>${points}</td>
+              `).join("")}
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <p class="tiny muted">
+        Je Zelle: Punkte, darunter Ansage / gemacht.
+      </p>
+
+      ${button(
+        "Zurück zum Spiel",
+        "showGame()",
+        "primary wide"
+      )}
+
+    </section>
+
+  `;
+
+}
+
+// =====================================
+// MENÜ
+// =====================================
+
+function openMenu() {
+
+  view = "menu";
+
+  document.getElementById("app").innerHTML = `
+
+    <section class="card">
+
+      <h2>Spiel verwalten</h2>
+
+      ${button(
+        "Spiel beenden",
+        "endGame()",
+        "wide"
+      )}
+
+      ${button(
+        "Neues Spiel beginnen",
+        "newGame()",
+        "wide"
+      )}
+
+      ${button(
+        "Letzte Runde korrigieren",
+        "undoRound()",
+        "wide"
+      )}
+
+      ${button(
+        "Zurück",
+        "showGame()",
+        "wide"
+      )}
+
+    </section>
+
+  `;
+
+}
+
+function endGame() {
+
+  if (!game) {
+    showSetup();
+    return;
+  }
+
+  if (confirm("Spiel wirklich beenden?")) {
+    showRanking();
+  }
+}
+
+function newGame() {
+
+  if (!confirm(
+    "Neues Spiel beginnen? Der aktuelle Spielstand geht verloren."
+  )) {
+    return;
+  }
+
+  game = null;
+
+  showSetup();
+}
+
+function undoRound() {
+
+  if (!game || game.rounds.length === 0) {
+
+    alert("Noch keine Runde abgeschlossen.");
+    return;
+  }
+
+  if (!confirm(
+    "Letzte abgeschlossene Runde korrigieren?"
+  )) {
+    return;
+  }
+
+  const lastRound = game.rounds.pop();
+
+  game.bids = [...lastRound.bids];
+  game.actual = [...lastRound.actual];
+
+  game.phase = "actual";
+
+  showActual();
+}
+
+// =====================================
+// APP STARTEN
+// =====================================
+
+showSetup();
+
+</script>
+
+</body>
+</html>
